@@ -1,0 +1,19 @@
+{
+  "name": "create-vtex-react-checkout",
+  "version": "1.0.0",
+  "description": "CLI para criar checkouts VTEX com React",
+  "bin": {
+    "create-vtex-checkout": "./bin/index.js"
+  },
+  "keywords": ["vtex", "checkout", "react", "cli", "boilerplate"],
+  "author": "Jaete",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "degit": "^2.8.4",
+    "execa": "^5.1.1",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "prompts": "^2.4.2"
+  }
+}
