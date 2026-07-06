@@ -1,0 +1,36 @@
+.badge {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-xs);
+  background-color: #eaf6ec;
+  border: 1px dashed var(--color-success);
+  border-radius: 4px;
+  padding: 6px var(--space-s);
+  color: #2e7d32;
+}
+
+.icon {
+  color: var(--color-success);
+}
+
+.code {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2e7d32;
+  padding: 2px;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--color-danger);
+  }
+}

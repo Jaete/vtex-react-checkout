@@ -1,0 +1,21 @@
+{
+  "name": "vtex-checkout-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10"
+  },
+  "lint-staged": {
+    "checkout-ui-settings/checkout-ui-custom/**/*.{ts,tsx}": [
+      "yarn --cwd checkout-ui-settings/checkout-ui-custom eslint --fix",
+      "yarn --cwd checkout-ui-settings/checkout-ui-custom prettier --write"
+    ],
+    "checkout-ui-settings/checkout-ui-custom/**/*.{scss,css,json,md}": [
+      "yarn --cwd checkout-ui-settings/checkout-ui-custom prettier --write"
+    ]
+  }
+}

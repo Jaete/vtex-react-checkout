@@ -1,0 +1,42 @@
+.empty {
+  max-width: 500px;
+  margin: var(--space-xxl) auto;
+  text-align: center;
+  padding: var(--space-xxl) var(--space-l);
+  background-color: var(--color-muted-0);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.icon {
+  color: var(--color-muted-3);
+  margin-bottom: var(--space-m);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: var(--space-s);
+  color: var(--color-muted-5);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-muted-4);
+  margin-bottom: var(--space-l);
+}
+
+.cta {
+  display: inline-block;
+  background-color: var(--vtex-pink);
+  color: var(--color-muted-0);
+  padding: var(--space-m) var(--space-xl);
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  font-size: 14px;
+
+  &:hover {
+    background-color: var(--vtex-pink-hover);
+    color: var(--color-muted-0);
+  }
+}

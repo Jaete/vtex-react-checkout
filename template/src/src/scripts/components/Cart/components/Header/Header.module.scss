@@ -1,0 +1,79 @@
+.header {
+  background-color: var(--color-muted-0);
+  border-bottom: 1px solid var(--color-muted-2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-m) var(--space-l);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-m);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.security {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-muted-4);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.securityIcon {
+  color: var(--color-success);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-muted-3);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stepActive {
+  color: var(--vtex-pink);
+
+  .num {
+    background-color: var(--vtex-pink);
+    color: var(--color-muted-0);
+  }
+}
+
+.num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-muted-2);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--color-muted-4);
+}
+
+.divider {
+  width: 24px;
+  height: 1px;
+  background-color: var(--color-muted-2);
+}

@@ -1,0 +1,39 @@
+:root {
+  /* Brand Colors */
+  --vtex-pink: #f71963;
+  --vtex-pink-hover: #d91654;
+  --vtex-pink-pressed: #b81247;
+  --vtex-primary-blue: #368df7;
+  --vtex-secondary-blue: #edf4fa;
+
+  /* Neutrals */
+  --color-muted-0: #ffffff;
+  --color-muted-1: #f2f4f6;
+  --color-muted-2: #e3e6e8;
+  --color-muted-3: #979899;
+  --color-muted-4: #727576;
+  --color-muted-5: #3f3f40;
+
+  /* Semantics */
+  --color-success: #8bc34a;
+  --color-warning: #ffb100;
+  --color-danger: #ff4c4c;
+  --color-info: #00bfd0;
+
+  /* Typography */
+  --font-family: 'Fabriga', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Spacings */
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Borders & Shadows */
+  --radius-button: 4px;
+  --radius-input: 4px;
+  --radius-card: 8px;
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
