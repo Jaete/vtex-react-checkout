@@ -9,6 +9,12 @@
     "bin",
     "template"
   ],
+  "scripts": {
+    "lint": "eslint \"bin/**/*.js\"",
+    "lint:fix": "eslint \"bin/**/*.js\" --fix",
+    "format": "prettier --write \"bin/**/*.js\"",
+    "prepare": "husky"
+  },
   "keywords": [
     "vtex",
     "checkout",
@@ -19,9 +25,22 @@
   "author": "Seu Nome",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.0.0",
     "chalk": "^4.1.2",
+    "commander": "^11.0.0",
     "fs-extra": "^11.1.1",
     "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "bin/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
