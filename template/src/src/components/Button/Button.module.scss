@@ -1,0 +1,139 @@
+// Escopado sob a âncora literal `.vtex-cart-app` (root do app, ver Cart.tsx)
+// para vencer o CSS nativo do checkout em `button` por especificidade —
+// nunca com `!important`. `box-sizing` já vem do reset global (webpack.config.js).
+:global(.vtex-cart-app) {
+  .button {
+    display: grid;
+    place-items: center;
+    gap: var(--space-s);
+    border-radius: var(--radius-button);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    > * {
+      grid-area: 1 / 1;
+    }
+
+    .hidden {
+      visibility: hidden;
+    }
+  }
+
+  /* ---- Aparência (cores) ---- */
+
+  .secondary {
+    background-color: var(--color-muted-1);
+    color: var(--color-muted-4);
+    border: 1px solid var(--color-muted-2);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-muted-2);
+      color: var(--color-muted-5);
+    }
+
+    &:disabled {
+      background-color: var(--color-muted-2);
+      color: var(--color-muted-3);
+      border-color: var(--color-muted-2);
+    }
+  }
+
+  .primary {
+    border: none;
+    color: var(--color-muted-0);
+    background: var(--vtex-pink);
+    box-shadow: 0 4px 12px rgba(247, 25, 99, 0.2);
+
+    &:hover:not(:disabled) {
+      background: var(--vtex-pink-hover);
+      box-shadow: 0 6px 16px rgba(247, 25, 99, 0.3);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--vtex-pink-pressed);
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      background: var(--color-muted-2);
+      color: var(--color-muted-3);
+      box-shadow: none;
+      transform: none;
+    }
+  }
+
+  /* ---- Dimensão (altura / padding / tipografia) ---- */
+
+  .sm {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 var(--space-m);
+    font-size: 12px;
+  }
+
+  .md {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--space-l);
+    font-size: 14px;
+  }
+
+  .lg {
+    min-width: 44px;
+    height: 44px;
+    padding: 0 var(--space-l);
+    font-size: 14px;
+  }
+
+  .xl {
+    height: 48px;
+    padding: 0 var(--space-l);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .fullWidth {
+    width: 100%;
+  }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  animation: rotate 2s linear infinite;
+}
+
+.spinnerPath {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}

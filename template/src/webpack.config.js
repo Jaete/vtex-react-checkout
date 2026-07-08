@@ -72,6 +72,14 @@ module.exports = (_env, argv) => {
       output: {
         filename: '[name].js',
         path: path.resolve(__dirname, outputDir),
+        // Reescreve SEMPRE os dois assets (checkout6-custom.js E .css) a cada
+        // compilação — inclusive em watch (`yarn dev`), quando só o TSX ou só
+        // o SCSS mudou. O padrão do webpack (`true`) pula gravar um asset cujos
+        // bytes não mudaram, o que faria o .js e o .css saírem de sincronia.
+        // Como TSX e SCSS compartilham o mesmo entrypoint, qualquer alteração
+        // recompila os dois juntos; isto garante que os dois também sejam
+        // regravados juntos no disco.
+        compareBeforeEmit: false,
       },
       externals: {
         // Apenas libs que já existem no ambiente do checkout VTEX
@@ -217,10 +225,12 @@ module.exports = (_env, argv) => {
       resolve: {
         preferRelative: true,
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        // Aliases para os diretórios cross-boundary (importados de vários
+        // pontos da árvore). Devem espelhar exatamente `paths` no tsconfig.json.
         alias: {
-          '~styles': path.resolve(__dirname, 'src', 'styles'),
-          '~scripts': path.resolve(__dirname, 'src', 'scripts'),
-          '~icons': path.resolve(__dirname, 'src', 'icons'),
+          '~components': path.resolve(__dirname, 'src', 'components'),
+          '~hooks': path.resolve(__dirname, 'src', 'hooks'),
+          '~utils': path.resolve(__dirname, 'src', 'utils'),
         },
       },
       performance: {

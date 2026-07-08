@@ -1,8 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Cart from './components/Cart/Cart'
+import { createRoot, type Root } from 'react-dom/client'
+import Cart from '~components/Cart/Cart'
 
 const CUSTOM_CONTAINER_CLASS = 'econverse-cart-container'
+
+// React 18: o root é criado uma única vez por container e reaproveitado.
+// Chamar createRoot de novo no mesmo nó emite warning; atualizações vão via
+// root.render (que reconcilia) e, na prática, pelo próprio estado dos hooks.
+let cartRoot: Root | null = null
 
 const renderCart = () => {
   const hash = window.location.hash
@@ -29,9 +33,12 @@ const renderCart = () => {
     }
     
     ;(container as HTMLElement).style.display = 'block'
-    
-    // Render the React Cart
-    ReactDOM.render(<Cart />, container)
+
+    // Render the React Cart — cria o root só na primeira vez.
+    if (!cartRoot) {
+      cartRoot = createRoot(container)
+    }
+    cartRoot.render(<Cart />)
   } else {
     // If we've navigated away from the cart, hide our custom component
     const container = document.querySelector(`.${CUSTOM_CONTAINER_CLASS}`) as HTMLElement

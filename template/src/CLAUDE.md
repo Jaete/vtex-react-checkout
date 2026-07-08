@@ -15,14 +15,49 @@ Implicações práticas dessa arquitetura:
 - React 18 + TypeScript (JSX automático, sem `import React` necessário)
 - SCSS (Sass), compilado via `sass-loader` + `css-loader` + `postcss-loader` (autoprefixer, cssnano) + `MiniCssExtractPlugin`
 - Babel (não `tsc`) para transpilar — o `ForkTsCheckerWebpackPlugin` cuida só da checagem de tipos, em paralelo
-- `useOrderForm` ([src/utils/useOrderForm.jsx](src/utils/useOrderForm.jsx)) é o hook que escuta os eventos jQuery do checkout (`orderFormUpdated.vtex`, etc.) e é a única ponte real com o `window.vtexjs`
+- `useOrderForm` ([src/hooks/useOrderForm.ts](src/hooks/useOrderForm.ts)) é o hook que escuta os eventos jQuery do checkout (`orderFormUpdated.vtex`, etc.) e é a única ponte real com o `window.vtexjs`
+
+## Layout do `src/`
+
+```
+src/
+├── checkout6-custom.tsx    # entrypoint JS (importa os scripts de bootstrap)
+├── checkout6-custom.scss   # entrypoint CSS (@import dos tokens globais)
+├── scripts/                # bootstrap/cola com o checkout nativo (não são componentes)
+│   ├── main.jsx            # esconde header/footer nativos via jQuery
+│   └── renderCartComponent.tsx  # monta o React (ReactDOM.render) no DOM do checkout
+├── components/             # todos os componentes React
+├── hooks/                  # hooks genéricos e reutilizáveis (useOrderForm, useShippingData)
+├── utils/                  # utilitários puros (ex.: currency.ts)
+└── styles/                 # tokens e SCSS global (_tokens, _main)
+```
+
+> Os componentes ficam em `src/components/` (nível de topo), **não** dentro de `src/scripts/`. `src/scripts/` guarda só os scripts de inicialização que fazem a ponte com o checkout nativo.
+
+### Aliases de import
+
+Diretórios cross-boundary (importados de vários pontos da árvore) têm aliases, para evitar `../../../` frágeis. Precisam estar espelhados **nos dois lugares**: `resolve.alias` do [webpack.config.js](webpack.config.js) e `compilerOptions.paths` do [tsconfig.json](tsconfig.json).
+
+| Alias          | Aponta para       |
+| -------------- | ----------------- |
+| `~components/` | `src/components/` |
+| `~hooks/`      | `src/hooks/`      |
+| `~utils/`      | `src/utils/`      |
+
+```tsx
+import { AlertCircleIcon } from '~components/Icons';
+import useShippingData from '~hooks/useShippingData';
+import { formatCurrency } from '~utils/currency';
+```
+
+Imports **dentro do mesmo domínio** (ex.: um subcomponente do Cart importando o `CartContext`) continuam relativos (`../../context/CartContext`) — são curtos e coesos. Use alias só quando o import cruza a fronteira do diretório.
 
 ## Estrutura de componentes
 
-Cada componente novo (ou refatorado) fica em sua própria pasta dentro de `src/scripts/components/`, com três arquivos:
+Cada componente novo (ou refatorado) fica em sua própria pasta dentro de `src/components/`, com três arquivos:
 
 ```
-src/scripts/components/MeuComponente/
+src/components/MeuComponente/
 ├── MeuComponente.tsx           # Componente principal
 ├── MeuComponente.module.scss   # Estilos com CSS Modules
 └── MeuComponente.types.ts      # Tipos TypeScript do componente
@@ -31,7 +66,7 @@ src/scripts/components/MeuComponente/
 Componentes que têm subcomponentes internos (como `Cart`) mantêm a subpasta `components/` já existente, mas cada subcomponente segue o mesmo padrão de arquivos (trio `.tsx`/`.module.scss`/`.types.ts`, mais um hook `use<Nome>.ts` quando há lógica não-trivial):
 
 ```
-src/scripts/components/Cart/
+src/components/Cart/
 ├── Cart.tsx
 ├── Cart.module.scss
 ├── context/
@@ -49,7 +84,9 @@ src/scripts/components/Cart/
 
 `.types.ts` só é criado quando o componente realmente recebe props de fora (átomos/moléculas como `QtySelector`, `CouponBadge`, `ShippingOption`); componentes que só consomem `CartContext` via `useCart()` não precisam de um `.types.ts` vazio.
 
-Todo o Cart já foi migrado para esse padrão (SCSS Modules + hooks + ícones extraídos para `src/scripts/components/Icons/`) — `src/styles/_main.scss` hoje só importa os tokens globais. Ver a skill [`/new-component`](.claude/skills/new-component/SKILL.md) para o passo a passo completo ao criar um componente novo.
+Lógica não-trivial de manipulação do orderForm/shippingData mora em hooks genéricos em `src/hooks/` (ex.: `useShippingData` concentra cálculo de frete e seleção de SLA); o `CartContext` só **compõe** esses hooks e centraliza o estado do carrinho.
+
+Todo o Cart já foi migrado para esse padrão (SCSS Modules + hooks + ícones extraídos para `src/components/Icons/`) — `src/styles/_main.scss` hoje só importa os tokens globais. Ver a skill [`/new-component`](.claude/skills/new-component/SKILL.md) para o passo a passo completo ao criar um componente novo.
 
 ### Wrappers e divs estruturais — nunca deixar sem classe "por padrão"
 
@@ -107,6 +144,28 @@ O elemento que esse reset teoricamente teria como alvo (hoje, a raiz de `Cart.ts
 ```
 
 Se `_tokens.scss` ainda expõe apenas CSS custom properties (`--vtex-pink`, etc.) e não variáveis Sass, prefira consumir via `var(--vtex-pink)` diretamente no module — não duplique valores hardcoded.
+
+### `!important` é proibido — vença o CSS nativo por especificidade
+
+**Nunca** use `!important` em nenhum `*.module.scss` nem `_main.scss`. O motivo real de ele aparecer aqui é vencer o CSS do checkout nativo (SmartCheckout) que estiliza elementos crus como `button` e `input`. A forma correta de ganhar esse embate é por **especificidade**, escopando os seletores do componente sob a âncora literal `.vtex-cart-app` (a classe não-hasheada aplicada no root do app em `Cart.tsx`, a mesma usada pelo reset global). Use `:global(.vtex-cart-app)` no `.module.scss`:
+
+```scss
+// vence `button`/`.template-cart button` etc. sem !important
+:global(.vtex-cart-app) {
+  .button {
+    height: 40px;
+    background: var(--color-muted-1);
+
+    &:hover:not(:disabled) {
+      background: var(--color-muted-2);
+    }
+  }
+}
+```
+
+Isso compila para `.vtex-cart-app .Button-module__button--hash` (duas classes) — especificidade acima de qualquer seletor nativo de elemento — e as classes internas continuam exportadas normalmente (`styles.button`). Regras que **não** disputam com o nativo (spinner, animações, `@keyframes`, wrappers próprios) ficam no nível raiz do arquivo, sem a âncora.
+
+Coisas que **não** precisam de override por especificidade: `box-sizing: border-box`, `margin: 0` e `padding: 0` já são aplicados a tudo dentro de `.vtex-cart-app` pelo reset global (`GLOBAL_RESET_CSS` em `webpack.config.js`) — não os repita nos módulos.
 
 ## TypeScript
 

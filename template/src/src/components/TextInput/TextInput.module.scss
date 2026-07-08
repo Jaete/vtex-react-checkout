@@ -1,0 +1,28 @@
+// Escopado sob a âncora `.vtex-cart-app` para vencer o CSS nativo do checkout
+// em `input` por especificidade — nunca com `!important`. `box-sizing` já vem
+// do reset global (webpack.config.js).
+:global(.vtex-cart-app) {
+  .input {
+    height: 40px;
+    border: 1px solid var(--color-muted-2);
+    border-radius: var(--radius-input);
+    padding: 0 var(--space-m);
+    font-size: 14px;
+    background-color: var(--color-muted-0);
+    color: var(--color-muted-5);
+
+    &:focus {
+      border-color: var(--vtex-pink);
+      box-shadow: 0 0 0 2px rgba(247, 25, 99, 0.15);
+    }
+
+    &:disabled {
+      background-color: var(--color-muted-1);
+      cursor: not-allowed;
+    }
+  }
+
+  .fluid {
+    flex: 1;
+  }
+}

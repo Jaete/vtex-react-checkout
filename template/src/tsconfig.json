@@ -16,14 +16,19 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "resolveJsonModule": true,
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "baseUrl": ".",
+    "paths": {
+      "~components/*": ["src/components/*"],
+      "~hooks/*": ["src/hooks/*"],
+      "~utils/*": ["src/utils/*"]
+    }
   },
   "exclude": ["node_modules"],
   "include": [
     "./typings/*.d.ts",
     "./**/*.tsx",
-    "./**/*.ts",
-    "src/utils/useOrderForm.jsx"
+    "./**/*.ts"
   ],
   "typeAcquisition": {
     "enable": false

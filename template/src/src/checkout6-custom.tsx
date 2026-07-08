@@ -1,3 +1,2 @@
-import "./scripts/main";
-import "./scripts/renderCartComponent";
-
+import './scripts/main'
+import './scripts/renderCartComponent'

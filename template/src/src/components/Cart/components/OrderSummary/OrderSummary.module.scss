@@ -1,0 +1,60 @@
+.summary {
+  background-color: var(--color-muted-0);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-l);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-muted-4);
+}
+
+.rowDiscount {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.rowTotal {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-muted-5);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-muted-1);
+  margin: var(--space-s) 0;
+}
+
+:global(.vtex-cart-app) .cta {
+  margin-top: var(--space-l);
+}
+
+.security {
+  margin-top: var(--space-m);
+  display: flex;
+  justify-content: center;
+}
+
+.securityBadge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-muted-4);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.securityIcon {
+  color: var(--color-muted-3);
+}

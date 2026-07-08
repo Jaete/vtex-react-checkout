@@ -1,0 +1,33 @@
+.sellerCode {
+  // Compartilha o card com o DiscountCoupon (logo acima); a borda separa
+  // visualmente as duas seções dentro do mesmo wrapper em CartContent.
+  margin-top: var(--space-l);
+  padding-top: var(--space-l);
+  border-top: 1px solid var(--color-muted-2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+}
+
+.applied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+}
+
+.code {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-muted-5);
+}
