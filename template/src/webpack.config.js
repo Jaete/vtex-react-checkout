@@ -52,6 +52,44 @@ class InjectGlobalResetPlugin {
 const GLOBAL_RESET_CSS =
   '.vtex-cart-app *,.vtex-cart-app :before,.vtex-cart-app :after{box-sizing:border-box;margin:0;padding:0}'
 
+// Carimba o MESMO "Integrity Hash" no topo do .js E do .css a cada
+// compilação, usando o `compilation.hash` (fullhash único desta build,
+// idêntico para todos os assets por definição).
+//
+// Por que NÃO o BannerPlugin com `[fullhash]`: o BannerPlugin resolve o
+// placeholder por-asset via `compilation.getPath`, e o CSS extraído pelo
+// MiniCssExtractPlugin cai em outro contexto de hash — resultado, o mesmo
+// build emitia hashes DIFERENTES no .js e no .css (verificado: 424cd4d... no
+// JS vs 4f29341... no CSS). O template do checkout usa esse valor pra casar
+// o par .js/.css do mesmo build; hashes divergentes fazem o CSS ser
+// rejeitado, quebrando o estilo — inclusive nos hot reloads do `yarn dev`.
+// Aqui um único valor é escrito nos dois, sempre juntos, numa passada só.
+class InjectIntegrityBannerPlugin {
+  apply(compiler) {
+    compiler.hooks.compilation.tap('InjectIntegrityBannerPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'InjectIntegrityBannerPlugin',
+          // Depois da minificação (Terser/CssMinimizer rodam em OPTIMIZE_SIZE):
+          // garante o banner no topo dos dois arquivos e que nada o remova.
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+        },
+        (assets) => {
+          const { sources } = compiler.webpack
+          // `/*! ... @preserve */` é comentário válido em JS e CSS.
+          const banner = `/*! @preserve Integrity Hash: ${compilation.hash} */\n`
+          Object.keys(assets)
+            .filter((name) => /\.(js|css)$/.test(name))
+            .forEach((name) => {
+              const existingSource = compilation.getAsset(name).source
+              compilation.updateAsset(name, new sources.ConcatSource(banner, existingSource))
+            })
+        },
+      )
+    })
+  }
+}
+
 module.exports = (_env, argv) => {
   // argv.mode é o valor literal passado em `--mode` na CLI (yarn dev usa
   // --mode=development, yarn build usa --mode=production). Não usamos isso
@@ -135,11 +173,7 @@ module.exports = (_env, argv) => {
             ],
           },
         }),
-        new webpack.BannerPlugin({
-          banner: `@preserve Integrity Hash: [fullhash]`,
-          entryOnly: true,
-        }),
-
+        new InjectIntegrityBannerPlugin(),
       ],
       module: {
         rules: [

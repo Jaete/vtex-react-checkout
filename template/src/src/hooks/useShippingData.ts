@@ -5,9 +5,36 @@ export interface ShippingOptionData {
   name: string;
   price: number;
   shippingEstimate: string;
+  /** Canal do SLA: `'delivery'` (entrega) ou `'pickup-in-point'` (retirada). */
+  deliveryChannel: string;
+  /** Nome da loja de retirada (`pickupStoreInfo.friendlyName`) — só em SLAs de retirada. */
+  pickupStoreName?: string;
+  /** Endereço resumido da loja de retirada — só em SLAs de retirada. */
+  pickupAddress?: string;
 }
 
-const PICKUP_DELIVERY_CHANNEL = 'pickup-in-point';
+export const PICKUP_DELIVERY_CHANNEL = 'pickup-in-point';
+
+/** `true` quando o SLA é de retirada em loja (em vez de entrega). */
+export function isPickup(deliveryChannel?: string): boolean {
+  return deliveryChannel === PICKUP_DELIVERY_CHANNEL;
+}
+
+/**
+ * Monta uma linha de endereço resumida a partir do `address` do
+ * `pickupStoreInfo` (rua, número e bairro), ignorando campos vazios.
+ *
+ * @param address - `pickupStoreInfo.address` do SLA de retirada.
+ * @returns Endereço em uma linha, ou `undefined` se não houver dados.
+ */
+function formatPickupAddress(address: any): string | undefined {
+  if (!address) {
+    return undefined;
+  }
+  const street = [address.street, address.number].filter(Boolean).join(', ');
+  const parts = [street, address.neighborhood].filter(Boolean);
+  return parts.length ? parts.join(' - ') : undefined;
+}
 
 /**
  * Resolve o endereço de entrega a ser vinculado ao frete.
@@ -43,7 +70,7 @@ function findDeliveryAddress(shippingData: any, postalCode: string) {
  * @returns O endereço correspondente ao canal de entrega do SLA.
  */
 function resolveAddressForSla(sla: any, deliveryAddress: any) {
-  return sla?.deliveryChannel === PICKUP_DELIVERY_CHANNEL
+  return isPickup(sla?.deliveryChannel)
     ? sla.pickupStoreInfo?.address
     : deliveryAddress;
 }
@@ -106,6 +133,9 @@ function buildShippingOptions(logisticsInfo: any[]): ShippingOptionData[] {
           name: sla.name,
           price: sla.price,
           shippingEstimate: sla.shippingEstimate,
+          deliveryChannel: sla.deliveryChannel,
+          pickupStoreName: isPickup(sla.deliveryChannel) ? sla.pickupStoreInfo?.friendlyName : undefined,
+          pickupAddress: isPickup(sla.deliveryChannel) ? formatPickupAddress(sla.pickupStoreInfo?.address) : undefined,
         });
       }
     });

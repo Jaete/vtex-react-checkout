@@ -8,3 +8,5 @@ export { default as CloseIcon } from './CloseIcon';
 export { default as SecurityIcon } from './SecurityIcon';
 export { default as SpinnerIcon } from './SpinnerIcon';
 export { default as LogoIcon } from './LogoIcon';
+export { default as TruckIcon } from './TruckIcon';
+export { default as StoreIcon } from './StoreIcon';

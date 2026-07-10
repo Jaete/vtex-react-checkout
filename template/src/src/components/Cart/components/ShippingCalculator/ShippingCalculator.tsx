@@ -1,12 +1,15 @@
 import Button from '~components/Button/Button'
 import FieldError from '~components/FieldError/FieldError'
 import SectionTitle from '~components/SectionTitle/SectionTitle'
-import ShippingOption from '~components/ShippingOption/ShippingOption'
 import TextInput from '~components/TextInput/TextInput'
+import { isPickup } from '~hooks/useShippingData'
 import { useShippingCalculator } from './useShippingCalculator'
+import OptionsList from './OptionsList/OptionsList'
+import ChannelSelector from './ChannelSelector/ChannelSelector'
+import type { ShippingCalculatorProps } from './ShippingCalculator.types'
 import styles from './ShippingCalculator.module.scss'
 
-function ShippingCalculator() {
+function ShippingCalculator({ variant = 'auto' }: ShippingCalculatorProps) {
   const {
     cep,
     loading,
@@ -18,6 +21,10 @@ function ShippingCalculator() {
     handleSubmit,
     isSubmitDisabled,
   } = useShippingCalculator()
+
+  const hasPickup = shippingOptions.some((option) => isPickup(option.deliveryChannel))
+  const hasDelivery = shippingOptions.some((option) => !isPickup(option.deliveryChannel))
+  const effectiveVariant = variant === 'auto' ? (hasPickup && hasDelivery ? 'channel' : 'list') : variant
 
   return (
     <div className={styles.shippingCalculator}>
@@ -46,23 +53,20 @@ function ShippingCalculator() {
 
       {error && <FieldError>{error}</FieldError>}
 
-      {shippingOptions.length > 0 && (
-        <div className={styles.options}>
-          <h4 className={styles.optionsTitle}>Opções de entrega:</h4>
-          <div className={styles.optionsList}>
-            {shippingOptions.map((option) => (
-              <ShippingOption
-                key={option.id}
-                name={option.name}
-                price={option.price}
-                shippingEstimate={option.shippingEstimate}
-                selected={selectedShipping === option.id}
-                onSelect={() => selectShippingOption(option.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {shippingOptions.length > 0 &&
+        (effectiveVariant === 'channel' ? (
+          <ChannelSelector
+            options={shippingOptions}
+            selectedShipping={selectedShipping}
+            onSelect={selectShippingOption}
+          />
+        ) : (
+          <OptionsList
+            options={shippingOptions}
+            selectedShipping={selectedShipping}
+            onSelect={selectShippingOption}
+          />
+        ))}
     </div>
   )
 }
