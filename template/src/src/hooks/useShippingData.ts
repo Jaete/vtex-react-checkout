@@ -1,23 +1,23 @@
-import { useRef, useState } from 'react';
+import { useRef, useState } from 'react'
 
 export interface ShippingOptionData {
-  id: string;
-  name: string;
-  price: number;
-  shippingEstimate: string;
+  id: string
+  name: string
+  price: number
+  shippingEstimate: string
   /** Canal do SLA: `'delivery'` (entrega) ou `'pickup-in-point'` (retirada). */
-  deliveryChannel: string;
+  deliveryChannel: string
   /** Nome da loja de retirada (`pickupStoreInfo.friendlyName`) — só em SLAs de retirada. */
-  pickupStoreName?: string;
+  pickupStoreName?: string
   /** Endereço resumido da loja de retirada — só em SLAs de retirada. */
-  pickupAddress?: string;
+  pickupAddress?: string
 }
 
-export const PICKUP_DELIVERY_CHANNEL = 'pickup-in-point';
+export const PICKUP_DELIVERY_CHANNEL = 'pickup-in-point'
 
 /** `true` quando o SLA é de retirada em loja (em vez de entrega). */
 export function isPickup(deliveryChannel?: string): boolean {
-  return deliveryChannel === PICKUP_DELIVERY_CHANNEL;
+  return deliveryChannel === PICKUP_DELIVERY_CHANNEL
 }
 
 /**
@@ -29,11 +29,11 @@ export function isPickup(deliveryChannel?: string): boolean {
  */
 function formatPickupAddress(address: any): string | undefined {
   if (!address) {
-    return undefined;
+    return undefined
   }
-  const street = [address.street, address.number].filter(Boolean).join(', ');
-  const parts = [street, address.neighborhood].filter(Boolean);
-  return parts.length ? parts.join(' - ') : undefined;
+  const street = [address.street, address.number].filter(Boolean).join(', ')
+  const parts = [street, address.neighborhood].filter(Boolean)
+  return parts.length ? parts.join(' - ') : undefined
 }
 
 /**
@@ -51,13 +51,15 @@ function formatPickupAddress(address: any): string | undefined {
  */
 function findDeliveryAddress(shippingData: any, postalCode: string) {
   if (shippingData?.address?.addressId) {
-    return shippingData.address;
+    return shippingData.address
   }
-  const available: any[] = shippingData?.availableAddresses || [];
-  const matches = available.filter((a) => a?.postalCode?.replace(/\D/g, '') === postalCode);
-  const searchMatches = matches.filter((a) => a.addressType === 'search');
-  const pool = searchMatches.length ? searchMatches : matches;
-  return pool.length ? pool[pool.length - 1] : null;
+  const available: any[] = shippingData?.availableAddresses || []
+  const matches = available.filter(
+    (a) => a?.postalCode?.replace(/\D/g, '') === postalCode
+  )
+  const searchMatches = matches.filter((a) => a.addressType === 'search')
+  const pool = searchMatches.length ? searchMatches : matches
+  return pool.length ? pool[pool.length - 1] : null
 }
 
 /**
@@ -72,7 +74,7 @@ function findDeliveryAddress(shippingData: any, postalCode: string) {
 function resolveAddressForSla(sla: any, deliveryAddress: any) {
   return isPickup(sla?.deliveryChannel)
     ? sla.pickupStoreInfo?.address
-    : deliveryAddress;
+    : deliveryAddress
 }
 
 /**
@@ -92,24 +94,29 @@ function resolveAddressForSla(sla: any, deliveryAddress: any) {
  * @param deliveryAddress - Endereço de entrega para os itens de delivery.
  * @returns Novo `logisticsInfo` com o SLA e o `addressId` corretos por item.
  */
-function buildLogisticsInfoForSla(logisticsInfo: any[], optionId: string, deliveryAddress: any) {
+function buildLogisticsInfoForSla(
+  logisticsInfo: any[],
+  optionId: string,
+  deliveryAddress: any
+) {
   return logisticsInfo.map((info: any, itemIndex: number) => {
-    const sla = info.slas?.find((s: any) => s.id === optionId);
+    const sla = info.slas?.find((s: any) => s.id === optionId)
     if (!sla) {
       return {
         itemIndex,
         selectedSla: info.selectedSla,
         selectedDeliveryChannel: info.selectedDeliveryChannel,
         addressId: info.addressId,
-      };
+      }
     }
     return {
       itemIndex,
       selectedSla: sla.id,
       selectedDeliveryChannel: sla.deliveryChannel,
-      addressId: resolveAddressForSla(sla, deliveryAddress)?.addressId ?? info.addressId,
-    };
-  });
+      addressId:
+        resolveAddressForSla(sla, deliveryAddress)?.addressId ?? info.addressId,
+    }
+  })
 }
 
 /**
@@ -121,12 +128,12 @@ function buildLogisticsInfoForSla(logisticsInfo: any[], optionId: string, delive
  * @returns Opções de frete deduplicadas por id, com o preço total somado.
  */
 function buildShippingOptions(logisticsInfo: any[]): ShippingOptionData[] {
-  const optionsById = new Map<string, ShippingOptionData>();
+  const optionsById = new Map<string, ShippingOptionData>()
   logisticsInfo.forEach((info: any) => {
     info.slas?.forEach((sla: any) => {
-      const existing = optionsById.get(sla.id);
+      const existing = optionsById.get(sla.id)
       if (existing) {
-        existing.price += sla.price;
+        existing.price += sla.price
       } else {
         optionsById.set(sla.id, {
           id: sla.id,
@@ -134,13 +141,17 @@ function buildShippingOptions(logisticsInfo: any[]): ShippingOptionData[] {
           price: sla.price,
           shippingEstimate: sla.shippingEstimate,
           deliveryChannel: sla.deliveryChannel,
-          pickupStoreName: isPickup(sla.deliveryChannel) ? sla.pickupStoreInfo?.friendlyName : undefined,
-          pickupAddress: isPickup(sla.deliveryChannel) ? formatPickupAddress(sla.pickupStoreInfo?.address) : undefined,
-        });
+          pickupStoreName: isPickup(sla.deliveryChannel)
+            ? sla.pickupStoreInfo?.friendlyName
+            : undefined,
+          pickupAddress: isPickup(sla.deliveryChannel)
+            ? formatPickupAddress(sla.pickupStoreInfo?.address)
+            : undefined,
+        })
       }
-    });
-  });
-  return Array.from(optionsById.values());
+    })
+  })
+  return Array.from(optionsById.values())
 }
 
 export interface UseShippingDataOptions {
@@ -150,7 +161,7 @@ export interface UseShippingDataOptions {
    * o usuário confirmar via `selectShippingOption`). Passe `false` para não
    * pré-selecionar nenhuma opção.
    */
-  autoSelectShipping?: boolean;
+  autoSelectShipping?: boolean
 }
 
 /**
@@ -158,69 +169,100 @@ export interface UseShippingDataOptions {
  * `window.vtexjs` — cálculo de frete por CEP e seleção de SLA. Mantém seu
  * próprio loading/erro de frete; o `CartContext` apenas compõe e reexpõe.
  *
+ * @param vtexjs - `window.vtexjs` já resolvido pelo `CartProvider` (única
+ * fonte da checagem de existência do global — ver `~utils/vtexjs`).
  * @param options - `autoSelectShipping` controla a pré-seleção da 1ª opção.
  * @returns Estado do frete (`loading`, `error`, `shippingOptions`,
  * `selectedShipping`) e ações (`calculateShipping`, `selectShippingOption`,
  * `clearShippingError`).
  */
-export function useShippingData({ autoSelectShipping = true }: UseShippingDataOptions = {}) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [shippingOptions, setShippingOptions] = useState<ShippingOptionData[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
-  const deliveryAddressRef = useRef<any>(null);
+export function useShippingData(
+  vtexjs: any,
+  { autoSelectShipping = true }: UseShippingDataOptions = {}
+) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [shippingOptions, setShippingOptions] = useState<ShippingOptionData[]>(
+    []
+  )
+  const [selectedShipping, setSelectedShipping] = useState<string | null>(null)
+  const deliveryAddressRef = useRef<any>(null)
   // A lista de SLAs por item é fixa para um CEP; guardamos o logisticsInfo do
   // calculateShipping (que traz os `slas`) porque cada sendAttachment de
   // seleção pode zerar os `slas` do orderForm atual.
-  const logisticsInfoRef = useRef<any[]>([]);
+  const logisticsInfoRef = useRef<any[]>([])
 
   const calculateShipping = async (postalCode: string) => {
-    const cleanCep = postalCode.replace(/\D/g, '');
+    const cleanCep = postalCode.replace(/\D/g, '')
     if (cleanCep.length !== 8) {
-      setError('CEP inválido. Digite um CEP com 8 dígitos.');
-      return;
+      setError('CEP inválido. Digite um CEP com 8 dígitos.')
+      return
     }
-    setError(null);
+    setError(null)
 
-    const vtexjs = (window as any).vtexjs;
+    if (!vtexjs) {
+      setError(
+        'Não foi possível calcular o frete: checkout ainda não está pronto.'
+      )
+      return
+    }
+
     try {
-      setLoading(true);
-      const orderForm = await vtexjs.checkout.calculateShipping({ postalCode: cleanCep, country: 'BRA' });
+      setLoading(true)
+      const orderForm = await vtexjs.checkout.calculateShipping({
+        postalCode: cleanCep,
+        country: 'BRA',
+      })
 
       if (orderForm?.shippingData?.logisticsInfo) {
-        logisticsInfoRef.current = orderForm.shippingData.logisticsInfo;
-        deliveryAddressRef.current = findDeliveryAddress(orderForm.shippingData, cleanCep);
-        const options = buildShippingOptions(orderForm.shippingData.logisticsInfo);
-        setShippingOptions(options);
+        logisticsInfoRef.current = orderForm.shippingData.logisticsInfo
+        deliveryAddressRef.current = findDeliveryAddress(
+          orderForm.shippingData,
+          cleanCep
+        )
+        const options = buildShippingOptions(
+          orderForm.shippingData.logisticsInfo
+        )
+        setShippingOptions(options)
         if (autoSelectShipping && options.length > 0) {
-          setSelectedShipping(options[0].id);
+          setSelectedShipping(options[0].id)
         }
       }
     } catch (err: any) {
-      setError('Falha ao calcular frete para este CEP.');
+      setError('Falha ao calcular frete para este CEP.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const selectShippingOption = async (optionId: string) => {
-    const previousShipping = selectedShipping;
-    setSelectedShipping(optionId);
+    const previousShipping = selectedShipping
+    setSelectedShipping(optionId)
 
-    const vtexjs = (window as any).vtexjs;
-    const option = shippingOptions.find((o) => o.id === optionId);
+    const option = shippingOptions.find((o) => o.id === optionId)
     if (!option) {
-      return;
+      return
+    }
+    if (!vtexjs) {
+      setSelectedShipping(previousShipping)
+      setError(
+        'Não foi possível selecionar o frete: checkout ainda não está pronto.'
+      )
+      return
     }
 
     const sourceLogistics = logisticsInfoRef.current.length
       ? logisticsInfoRef.current
-      : vtexjs.checkout.orderForm.shippingData.logisticsInfo;
-    const deliveryAddress = deliveryAddressRef.current;
+      : vtexjs.checkout.orderForm?.shippingData?.logisticsInfo
+    const deliveryAddress = deliveryAddressRef.current
 
     try {
-      setLoading(true);
-      const logisticsInfo = buildLogisticsInfoForSla(sourceLogistics, optionId, deliveryAddress);
+      setLoading(true)
+      const logisticsInfo = buildLogisticsInfoForSla(
+        sourceLogistics,
+        optionId,
+        deliveryAddress
+      )
 
       // Enviamos o `address` (singular) + logisticsInfo. O `address` vincula o
       // endereço de entrega e faz a VTEX calcular o frete (sem ele o
@@ -232,16 +274,16 @@ export function useShippingData({ autoSelectShipping = true }: UseShippingDataOp
       await vtexjs.checkout.sendAttachment('shippingData', {
         address: deliveryAddress,
         logisticsInfo,
-      });
+      })
     } catch (err: any) {
-      setSelectedShipping(previousShipping);
-      setError('Erro ao selecionar a opção de frete.');
+      setSelectedShipping(previousShipping)
+      setError('Erro ao selecionar a opção de frete.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const clearShippingError = () => setError(null);
+  const clearShippingError = () => setError(null)
 
   return {
     loading,
@@ -251,7 +293,7 @@ export function useShippingData({ autoSelectShipping = true }: UseShippingDataOp
     calculateShipping,
     selectShippingOption,
     clearShippingError,
-  };
+  }
 }
 
-export default useShippingData;
+export default useShippingData

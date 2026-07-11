@@ -7,7 +7,16 @@ import { useSellerCode } from './useSellerCode'
 import styles from './SellerCode.module.scss'
 
 function SellerCode({ setOpenTextField = false }: SellerCodeProps) {
-  const { code, setCode, activeCode, sellerCodeError, loading, showInput, handleSubmit, handleAlter } = useSellerCode({
+  const {
+    code,
+    setCode,
+    activeCode,
+    sellerCodeError,
+    loading,
+    showInput,
+    handleSubmit,
+    handleAlter,
+  } = useSellerCode({
     setOpenTextField,
   })
 
@@ -24,7 +33,11 @@ function SellerCode({ setOpenTextField = false }: SellerCodeProps) {
               placeholder="Digite o código"
               disabled={loading}
             />
-            <Button type="submit" disabled={loading || !code.trim()} variant="primary">
+            <Button
+              type="submit"
+              disabled={loading || !code.trim()}
+              variant="primary"
+            >
               Aplicar
             </Button>
           </div>

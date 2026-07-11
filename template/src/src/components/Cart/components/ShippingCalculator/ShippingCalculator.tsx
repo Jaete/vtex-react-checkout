@@ -22,9 +22,18 @@ function ShippingCalculator({ variant = 'auto' }: ShippingCalculatorProps) {
     isSubmitDisabled,
   } = useShippingCalculator()
 
-  const hasPickup = shippingOptions.some((option) => isPickup(option.deliveryChannel))
-  const hasDelivery = shippingOptions.some((option) => !isPickup(option.deliveryChannel))
-  const effectiveVariant = variant === 'auto' ? (hasPickup && hasDelivery ? 'channel' : 'list') : variant
+  const hasPickup = shippingOptions.some((option) =>
+    isPickup(option.deliveryChannel)
+  )
+  const hasDelivery = shippingOptions.some(
+    (option) => !isPickup(option.deliveryChannel)
+  )
+  const effectiveVariant =
+    variant === 'auto'
+      ? hasPickup && hasDelivery
+        ? 'channel'
+        : 'list'
+      : variant
 
   return (
     <div className={styles.shippingCalculator}>
@@ -44,7 +53,12 @@ function ShippingCalculator({ variant = 'auto' }: ShippingCalculatorProps) {
               required
               disabled={loading}
             />
-            <Button type="submit" disabled={isSubmitDisabled} variant="primary" loading={loading}>
+            <Button
+              type="submit"
+              disabled={isSubmitDisabled}
+              variant="primary"
+              loading={loading}
+            >
               Calcular
             </Button>
           </div>

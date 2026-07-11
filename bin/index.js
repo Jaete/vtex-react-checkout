@@ -16,16 +16,16 @@ program
   .version('1.0.0')
   .action(async () => {
     const projectPath = process.cwd();
-    
+
     console.log(chalk.blue.bold('\n🚀 Criando checkout VTEX...\n'));
     console.log(chalk.gray(`📂 Diretório: ${projectPath}\n`));
 
-    if (!await isDirectoryEmpty(projectPath)) {
+    if (!(await isDirectoryEmpty(projectPath))) {
       const { overwrite } = await prompts({
         type: 'confirm',
         name: 'overwrite',
         message: `O diretório atual não está vazio. Deseja continuar mesmo assim?`,
-        initial: false
+        initial: false,
       });
 
       if (!overwrite) {
@@ -41,7 +41,7 @@ program
           type: 'text',
           name: 'account',
           message: 'Qual é o nome da account VTEX?',
-          validate: (value) => value.length > 0 || 'Account é obrigatório'
+          validate: (value) => value.length > 0 || 'Account é obrigatório',
         },
         {
           type: 'text',
@@ -53,8 +53,8 @@ program
               return 'Workspace deve conter apenas letras minúsculas e números, sem espaços ou caracteres especiais';
             }
             return true;
-          }
-        }
+          },
+        },
       ]);
 
       if (!account || !workspace) {
@@ -69,7 +69,7 @@ program
       if (!isLoggedIn) {
         console.log(chalk.gray('   Abrindo navegador para autenticação...\n'));
         await runInteractive('vtex', ['login', account], projectPath);
-        
+
         const loginSuccess = await checkIfLoggedIn(account);
         if (!loginSuccess) {
           throw new Error('Login não foi concluído. Execute "vtex login" manualmente.');
@@ -87,7 +87,7 @@ program
       // 4. Verificar e instalar checkout-ui-settings no workspace
       console.log(chalk.yellow('🔍 Verificando checkout-ui-settings no workspace...'));
       const isInstalled = await checkIfAppIsInstalled('vtex.checkout-ui-settings');
-      
+
       if (!isInstalled) {
         console.log(chalk.yellow('📦 Instalando checkout-ui-settings no workspace...'));
         await runInteractive('vtex', ['install', 'vtex.checkout-ui-settings'], projectPath);
@@ -110,7 +110,11 @@ program
         await updateManifestVendor(settingsLocalPath, account);
         console.log(chalk.green('✅ Vendor atualizado!\n'));
       } else {
-        console.log(chalk.green('✅ checkout-ui-settings já existe localmente e já possui manifest.json (vtex init já feito)!\n'));
+        console.log(
+          chalk.green(
+            '✅ checkout-ui-settings já existe localmente e já possui manifest.json (vtex init já feito)!\n'
+          )
+        );
       }
 
       // 6. COPIAR template/src para checkout-ui-custom e template/claude para a raiz do projeto
@@ -132,15 +136,38 @@ program
       console.log(chalk.green('✅ Dependências instaladas!\n'));
 
       console.log(chalk.green.bold('\n✨ Checkout configurado com sucesso!\n'));
+      console.log(
+        chalk.gray('  # gera checkout-ui-custom/checkout6-custom.js e .css a partir de src/')
+      );
+      console.log(
+        `  ${chalk.cyan('cd')} checkout-ui-settings/checkout-ui-custom && ${chalk.cyan('yarn')} build && cd ../..`
+      );
       console.log(`  ${chalk.cyan('cd')} checkout-ui-settings`);
       console.log(`  ${chalk.cyan('vtex')} link\n`);
-      
     } catch (error) {
       console.error(chalk.red('\n❌ Erro ao criar o checkout:'));
       console.error(chalk.red(error.message));
       process.exit(1);
     }
   });
+
+// Nomes que nunca devem ser copiados do template para o projeto do usuário,
+// mesmo que existam localmente em template/src ou template/claude (ex.:
+// node_modules instalado à mão para rodar `tsc`/testes durante o
+// desenvolvimento do próprio template, ou o bundle de build que o usuário já
+// é instruído a gerar com `yarn build` — copiar um artefato stale desfaria
+// esse passo).
+const COPY_IGNORE_NAMES = new Set([
+  'node_modules',
+  '.git',
+  '.DS_Store',
+  'checkout6-custom.js',
+  'checkout6-custom.css',
+]);
+
+function shouldCopyTemplatePath(srcPath) {
+  return !COPY_IGNORE_NAMES.has(path.basename(srcPath));
+}
 
 // Copia template/src para checkout-ui-custom, apagando o conteúdo existente antes
 async function copyTemplateToCheckoutUICustom(projectPath) {
@@ -165,7 +192,7 @@ async function copyTemplateToCheckoutUICustom(projectPath) {
     // Lista conteúdo do template/src
     console.log(chalk.cyan('   📋 Conteúdo do template/src:'));
     const templateContents = await fs.readdir(resolvedTemplateSrcPath);
-    templateContents.forEach(item => {
+    templateContents.forEach((item) => {
       console.log(chalk.gray(`      - ${item}`));
     });
 
@@ -178,7 +205,8 @@ async function copyTemplateToCheckoutUICustom(projectPath) {
     await fs.copy(resolvedTemplateSrcPath, customPath, {
       overwrite: true,
       errorOnExist: false,
-      preserveTimestamps: true
+      preserveTimestamps: true,
+      filter: shouldCopyTemplatePath,
     });
 
     console.log(chalk.green('✅ Arquivos copiados com sucesso!\n'));
@@ -186,12 +214,13 @@ async function copyTemplateToCheckoutUICustom(projectPath) {
     // Verifica o que foi copiado
     console.log(chalk.cyan('   📋 Conteúdo de checkout-ui-custom após a cópia:'));
     const copiedContents = await fs.readdir(customPath);
-    copiedContents.forEach(item => {
+    copiedContents.forEach((item) => {
       console.log(chalk.gray(`      - ${item}`));
     });
 
-    console.log(chalk.gray(`\n   📁 Total: ${copiedContents.length} arquivos/pastas em checkout-ui-custom\n`));
-
+    console.log(
+      chalk.gray(`\n   📁 Total: ${copiedContents.length} arquivos/pastas em checkout-ui-custom\n`)
+    );
   } catch (error) {
     throw new Error(`Erro ao configurar checkout-ui-custom: ${error.message}`);
   }
@@ -212,7 +241,7 @@ async function copyTemplateClaudeToRoot(projectPath) {
     // Lista conteúdo do template/claude
     console.log(chalk.cyan('   📋 Conteúdo do template/claude:'));
     const templateContents = await fs.readdir(resolvedTemplateClaudePath);
-    templateContents.forEach(item => {
+    templateContents.forEach((item) => {
       console.log(chalk.gray(`      - ${item}`));
     });
 
@@ -221,7 +250,8 @@ async function copyTemplateClaudeToRoot(projectPath) {
     await fs.copy(resolvedTemplateClaudePath, projectPath, {
       overwrite: true,
       errorOnExist: false,
-      preserveTimestamps: true
+      preserveTimestamps: true,
+      filter: shouldCopyTemplatePath,
     });
 
     console.log(chalk.green('✅ Arquivos copiados com sucesso!\n'));
@@ -232,9 +262,27 @@ async function copyTemplateClaudeToRoot(projectPath) {
       await fs.chmod(preCommitHookPath, 0o755);
     }
 
+    // settings.local.json do template traz o placeholder __PROJECT_PATH__ nos
+    // caminhos absolutos das permissões (em vez do caminho da máquina de
+    // quem escreveu o template) — substitui pelo diretório real do projeto
+    // recém-criado.
+    await rewriteProjectPathPlaceholder(projectPath);
   } catch (error) {
     throw new Error(`Erro ao configurar arquivos do Claude na raiz do projeto: ${error.message}`);
   }
+}
+
+// Substitui o placeholder __PROJECT_PATH__ pelo caminho absoluto real do
+// projeto nos arquivos de configuração do Claude copiados do template.
+async function rewriteProjectPathPlaceholder(projectPath) {
+  const settingsPath = path.join(projectPath, '.claude', 'settings.local.json');
+  if (!fs.existsSync(settingsPath)) {
+    return;
+  }
+
+  const content = await fs.readFile(settingsPath, 'utf8');
+  const rewritten = content.split('__PROJECT_PATH__').join(projectPath);
+  await fs.writeFile(settingsPath, rewritten, 'utf8');
 }
 
 // Garante que a raiz do projeto é um repositório git (necessário para o core.hooksPath do husky)
@@ -257,7 +305,7 @@ function runInteractive(command, args, cwd) {
     const child = spawn(command, args, {
       cwd,
       stdio: 'inherit',
-      shell: true
+      shell: true,
     });
 
     child.on('close', (code) => {
@@ -277,14 +325,20 @@ function runCapture(command, args, cwd) {
     const child = spawn(command, args, {
       cwd,
       stdio: 'pipe',
-      shell: true
+      shell: true,
     });
 
     let stdout = '';
     let stderr = '';
 
-    if (child.stdout) child.stdout.on('data', (data) => { stdout += data.toString(); });
-    if (child.stderr) child.stderr.on('data', (data) => { stderr += data.toString(); });
+    if (child.stdout)
+      child.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+    if (child.stderr)
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
 
     child.on('close', (code) => {
       if (code === 0) resolve({ stdout, stderr });
@@ -300,16 +354,16 @@ function runCapture(command, args, cwd) {
 async function checkIfLoggedIn(account) {
   try {
     const { stdout } = await runCapture('vtex', ['whoami']);
-    
+
     // Extrai a account do output: "Logged into ACONTA as email@..."
     const match = stdout.match(/Logged into (\S+)/);
-    
+
     if (!match) {
       return false; // Não está logado
     }
-    
+
     const currentAccount = match[1];
-    
+
     // Compara exatamente (case-insensitive para segurança)
     return currentAccount.toLowerCase() === account.toLowerCase();
   } catch (error) {
@@ -373,7 +427,7 @@ async function isVtexAppInitialized(dirPath) {
 async function isDirectoryEmpty(dirPath) {
   try {
     const files = await fs.readdir(dirPath);
-    const visibleFiles = files.filter(f => !f.startsWith('.'));
+    const visibleFiles = files.filter((f) => !f.startsWith('.'));
     return visibleFiles.length === 0;
   } catch (error) {
     return true;

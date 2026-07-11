@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useRef, useState } from 'react'
 import useOrderForm from '~hooks/useOrderForm'
 import useShippingData from '~hooks/useShippingData'
 import type { ShippingOptionData } from '~hooks/useShippingData'
+import { getVtexjs } from '~utils/vtexjs'
 
 export type { ShippingOptionData }
 
@@ -17,6 +18,13 @@ export interface CartItem {
 }
 
 interface CartContextProps {
+  /**
+   * `window.vtexjs` já resolvido (ou `null` se ainda não carregou). Único
+   * ponto de acesso ao global no projeto — qualquer componente/hook que
+   * precise dele deve ler daqui (`useCart().vtexjs`) em vez de acessar
+   * `window` diretamente.
+   */
+  vtexjs: any
   orderForm: any
   loading: boolean
   error: string | null
@@ -42,9 +50,23 @@ interface CartProviderProps {
   autoSelectShipping?: boolean
 }
 
-export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelectShipping }) => {
-  const { orderForm, loading: vtexLoading } = useOrderForm()
-  const shipping = useShippingData({ autoSelectShipping })
+export const CartProvider: React.FC<CartProviderProps> = ({
+  children,
+  autoSelectShipping,
+}) => {
+  // Única resolução do global no projeto: uma ref "lazy" que tenta achar
+  // `window.vtexjs` a cada render até encontrá-lo (o CartProvider já
+  // re-renderiza com frequência via os eventos jQuery de `useOrderForm`) e a
+  // partir daí fica travada nesse valor — não precisa "reencontrar" porque o
+  // global é um singleton que não muda de identidade depois de carregado.
+  const vtexjsRef = useRef<any>(null)
+  if (vtexjsRef.current === null) {
+    vtexjsRef.current = getVtexjs()
+  }
+  const vtexjs = vtexjsRef.current
+
+  const { orderForm, loading: vtexLoading } = useOrderForm(vtexjs)
+  const shipping = useShippingData(vtexjs, { autoSelectShipping })
 
   const [localLoading, setLocalLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -52,7 +74,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
   const [sellerCodeError, setSellerCodeError] = useState<string | null>(null)
 
   const updateItemQuantity = async (index: number, quantity: number) => {
-    const vtexjs = (window as any).vtexjs
+    if (!vtexjs) {
+      setError('Erro ao atualizar a quantidade do produto.')
+      return
+    }
     try {
       await vtexjs.checkout.updateItems([{ index, quantity }])
     } catch (err: any) {
@@ -61,7 +86,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
   }
 
   const removeItem = async (index: number) => {
-    const vtexjs = (window as any).vtexjs
+    if (!vtexjs) {
+      setError('Erro ao remover o produto.')
+      return
+    }
     try {
       await vtexjs.checkout.updateItems([{ index, quantity: 0 }])
     } catch (err: any) {
@@ -76,7 +104,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
     }
     setCouponError(null)
 
-    const vtexjs = (window as any).vtexjs
+    if (!vtexjs) {
+      setCouponError('Erro ao aplicar cupom.')
+      return
+    }
     try {
       setLocalLoading(true)
       await vtexjs.checkout.addDiscountCoupon(couponCode)
@@ -88,7 +119,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
   }
 
   const removeDiscountCoupon = async () => {
-    const vtexjs = (window as any).vtexjs
+    if (!vtexjs) {
+      setCouponError('Erro ao remover o cupom.')
+      return
+    }
     try {
       setLocalLoading(true)
       await vtexjs.checkout.removeDiscountCoupon()
@@ -107,7 +141,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
     }
     setSellerCodeError(null)
 
-    const vtexjs = (window as any).vtexjs
+    if (!vtexjs) {
+      setSellerCodeError('Erro ao aplicar o código de vendedor.')
+      return
+    }
     try {
       setLocalLoading(true)
       const marketingData = {
@@ -138,6 +175,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children, autoSelect
   return (
     <CartContext.Provider
       value={{
+        vtexjs,
         orderForm,
         loading: activeLoading,
         error: error || shipping.error,

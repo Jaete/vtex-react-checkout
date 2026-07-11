@@ -1,7 +1,7 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from 'react'
 
 interface SpinnerIconProps extends SVGProps<SVGSVGElement> {
-  pathClassName?: string;
+  pathClassName?: string
 }
 
 function SpinnerIcon({ pathClassName, ...props }: SpinnerIconProps) {
@@ -18,7 +18,7 @@ function SpinnerIcon({ pathClassName, ...props }: SpinnerIconProps) {
         className={pathClassName}
       />
     </svg>
-  );
+  )
 }
 
-export default SpinnerIcon;
+export default SpinnerIcon

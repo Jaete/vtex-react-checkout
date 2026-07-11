@@ -7,8 +7,15 @@ import { useDiscountCoupon } from './useDiscountCoupon'
 import styles from './DiscountCoupon.module.scss'
 
 function DiscountCoupon() {
-  const { couponCode, setCouponCode, activeCoupon, couponError, loading, handleSubmit, removeDiscountCoupon } =
-    useDiscountCoupon()
+  const {
+    couponCode,
+    setCouponCode,
+    activeCoupon,
+    couponError,
+    loading,
+    handleSubmit,
+    removeDiscountCoupon,
+  } = useDiscountCoupon()
 
   return (
     <div className={styles.discountCoupon}>
@@ -23,14 +30,23 @@ function DiscountCoupon() {
               placeholder="Digite o código"
               disabled={loading}
             />
-            <Button type="submit" disabled={loading || !couponCode.trim()} variant="primary" loading={loading}>
+            <Button
+              type="submit"
+              disabled={loading || !couponCode.trim()}
+              variant="primary"
+              loading={loading}
+            >
               Aplicar
             </Button>
           </div>
         </form>
       ) : (
         <div className={styles.applied}>
-          <CouponBadge code={activeCoupon} onRemove={removeDiscountCoupon} disabled={loading} />
+          <CouponBadge
+            code={activeCoupon}
+            onRemove={removeDiscountCoupon}
+            disabled={loading}
+          />
           <span className={styles.successMsg}>Cupom ativo com sucesso!</span>
         </div>
       )}

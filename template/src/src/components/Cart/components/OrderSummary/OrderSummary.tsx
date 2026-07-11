@@ -1,12 +1,20 @@
-import Button from '~components/Button/Button';
-import SectionTitle from '~components/SectionTitle/SectionTitle';
-import { SecurityIcon } from '~components/Icons';
-import { formatCurrency } from '~utils/currency';
-import { useOrderSummary } from './useOrderSummary';
-import styles from './OrderSummary.module.scss';
+import Button from '~components/Button/Button'
+import SectionTitle from '~components/SectionTitle/SectionTitle'
+import { SecurityIcon } from '~components/Icons'
+import { formatCurrency } from '~utils/currency'
+import { useOrderSummary } from './useOrderSummary'
+import styles from './OrderSummary.module.scss'
 
 function OrderSummary() {
-  const { loading, itemsTotal, discountVal, shippingVal, total, hasItems, handleCheckout } = useOrderSummary();
+  const {
+    loading,
+    itemsTotal,
+    discountVal,
+    shippingVal,
+    total,
+    hasItems,
+    handleCheckout,
+  } = useOrderSummary()
 
   return (
     <div className={styles.summary}>
@@ -27,7 +35,9 @@ function OrderSummary() {
 
         <div className={styles.row}>
           <span>Entrega</span>
-          <span>{shippingVal > 0 ? formatCurrency(shippingVal) : 'A calcular'}</span>
+          <span>
+            {shippingVal > 0 ? formatCurrency(shippingVal) : 'A calcular'}
+          </span>
         </div>
 
         <div className={styles.divider} />
@@ -52,12 +62,16 @@ function OrderSummary() {
 
       <div className={styles.security}>
         <div className={styles.securityBadge}>
-          <SecurityIcon width={12} height={12} className={styles.securityIcon} />
+          <SecurityIcon
+            width={12}
+            height={12}
+            className={styles.securityIcon}
+          />
           <span>Ambiente seguro e criptografado</span>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default OrderSummary;
+export default OrderSummary

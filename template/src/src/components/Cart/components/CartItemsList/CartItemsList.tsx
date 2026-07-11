@@ -1,12 +1,12 @@
-import { TrashIcon } from '~components/Icons';
-import QtySelector from '~components/QtySelector/QtySelector';
-import { useCart } from '../../context/CartContext';
-import { formatCurrency } from '~utils/currency';
-import styles from './CartItemsList.module.scss';
+import { TrashIcon } from '~components/Icons'
+import QtySelector from '~components/QtySelector/QtySelector'
+import { useCart } from '../../context/CartContext'
+import { formatCurrency } from '~utils/currency'
+import styles from './CartItemsList.module.scss'
 
 function CartItemsList() {
-  const { orderForm, loading, updateItemQuantity, removeItem } = useCart();
-  const items = orderForm?.items || [];
+  const { orderForm, loading, updateItemQuantity, removeItem } = useCart()
+  const items = orderForm?.items || []
 
   if (loading && items.length === 0) {
     return (
@@ -25,19 +25,21 @@ function CartItemsList() {
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   return (
     <>
       {items.map((item, index) => {
-        const hasDiscount = item.listPrice > item.price;
+        const hasDiscount = item.listPrice > item.price
 
         return (
           <div key={`${item.id}-${index}`} className={styles.item}>
             <div className={styles.imageContainer}>
               <img
-                src={item.imageUrl || 'https://placehold.co/100x100?text=Produto'}
+                src={
+                  item.imageUrl || 'https://placehold.co/100x100?text=Produto'
+                }
                 alt={item.name}
                 className={styles.image}
               />
@@ -65,24 +67,34 @@ function CartItemsList() {
 
               <div className={styles.bottom}>
                 <div className={styles.prices}>
-                  {hasDiscount && <span className={styles.priceList}>{formatCurrency(item.listPrice)}</span>}
-                  <span className={styles.priceSelling}>{formatCurrency(item.price)}</span>
+                  {hasDiscount && (
+                    <span className={styles.priceList}>
+                      {formatCurrency(item.listPrice)}
+                    </span>
+                  )}
+                  <span className={styles.priceSelling}>
+                    {formatCurrency(item.price)}
+                  </span>
                 </div>
 
                 <QtySelector
                   value={item.quantity}
-                  onDecrease={() => updateItemQuantity(index, item.quantity - 1)}
-                  onIncrease={() => updateItemQuantity(index, item.quantity + 1)}
+                  onDecrease={() =>
+                    updateItemQuantity(index, item.quantity - 1)
+                  }
+                  onIncrease={() =>
+                    updateItemQuantity(index, item.quantity + 1)
+                  }
                   decreaseDisabled={item.quantity <= 1 || loading}
                   increaseDisabled={loading}
                 />
               </div>
             </div>
           </div>
-        );
+        )
       })}
     </>
-  );
+  )
 }
 
-export default CartItemsList;
+export default CartItemsList

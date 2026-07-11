@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { SVGProps } from 'react'
 
 function TrashIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -17,7 +17,7 @@ function TrashIcon(props: SVGProps<SVGSVGElement>) {
       <line x1="10" y1="11" x2="10" y2="17" />
       <line x1="14" y1="11" x2="14" y2="17" />
     </svg>
-  );
+  )
 }
 
-export default TrashIcon;
+export default TrashIcon

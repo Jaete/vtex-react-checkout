@@ -15,7 +15,8 @@ Implicações práticas dessa arquitetura:
 - React 18 + TypeScript (JSX automático, sem `import React` necessário)
 - SCSS (Sass), compilado via `sass-loader` + `css-loader` + `postcss-loader` (autoprefixer, cssnano) + `MiniCssExtractPlugin`
 - Babel (não `tsc`) para transpilar — o `ForkTsCheckerWebpackPlugin` cuida só da checagem de tipos, em paralelo
-- `useOrderForm` ([src/hooks/useOrderForm.ts](src/hooks/useOrderForm.ts)) é o hook que escuta os eventos jQuery do checkout (`orderFormUpdated.vtex`, etc.) e é a única ponte real com o `window.vtexjs`
+- `useOrderForm` ([src/hooks/useOrderForm.ts](src/hooks/useOrderForm.ts)) é o hook que escuta os eventos jQuery do checkout (`orderFormUpdated.vtex`, etc.)
+- `CartProvider` ([src/components/Cart/context/CartContext.tsx](src/components/Cart/context/CartContext.tsx)) é o único lugar que resolve `window.vtexjs` (via `~utils/vtexjs`) — ele guarda a referência numa ref e a repassa por parâmetro para `useOrderForm`/`useShippingData`, além de expô-la no contexto (`useCart().vtexjs`). Nenhum outro hook/componente deve ler `window.vtexjs` diretamente; veja a seção "Regras específicas do ambiente de checkout".
 
 ## Layout do `src/`
 
@@ -192,7 +193,7 @@ const CartItem: React.FC<CartItemProps> = ({ index, item, onRemove }) => { ... }
 
 ## Regras específicas do ambiente de checkout
 
-- **Nunca acesse `window.vtexjs` sem guarda.** Siga o padrão já usado em `CartContext.tsx`: cheque `typeof window !== 'undefined' && !!(window as any).vtexjs` antes de qualquer chamada, com fallback de mock para desenvolvimento local (`isMock`).
+- **Nunca acesse `window.vtexjs` direto.** O `CartProvider` é o único lugar que resolve o global (via `~utils/vtexjs#getVtexjs`, que checa `typeof window !== 'undefined' && !!(window as any).vtexjs`) — ele guarda o resultado numa ref e repassa para `useOrderForm`/`useShippingData` por parâmetro, além de expor `vtexjs` no contexto. Qualquer componente ou hook novo que precise do global deve pegá-lo de `useCart().vtexjs`, nunca de `(window as any).vtexjs` diretamente, e sempre checar se não é `null`/`undefined` antes de chamar `vtexjs.checkout.*` (pode não ter carregado ainda).
 - **Não quebre o checkout nativo.** Este script roda dentro da página real do checkout — erros não tratados, `throw` fora de try/catch em handlers de evento, ou manipulação direta de elementos nativos fora do que já é feito em `renderCartComponent.tsx` podem quebrar o fluxo de compra do lojista.
 - **Bundle único, sem code splitting.** Não importe bibliotecas pesadas sem necessidade; o `performance.maxAssetSize` do webpack já está configurado como alerta (512kb).
 - **Sem `console.log` em produção** — o Terser já remove `console`/`debugger`, mas evite depender disso durante o dev; limpe antes de commitar.

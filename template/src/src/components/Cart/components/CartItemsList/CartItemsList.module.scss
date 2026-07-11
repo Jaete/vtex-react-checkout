@@ -20,8 +20,8 @@
   flex: none;
   width: 80px;
   height: 80px;
-  background: #ffffff;
-  border: 1px solid #e8eaed;
+  background: var(--color-muted-0);
+  border: 1px solid var(--color-muted-2);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -60,7 +60,7 @@
   font-weight: 600;
   font-size: 14px;
   line-height: 150%;
-  color: #1e1e1e;
+  color: var(--color-text-strong);
 }
 
 .sku {
@@ -85,21 +85,21 @@
   font-size: 13px;
   line-height: 120%;
   text-decoration: line-through;
-  color: #787878;
+  color: var(--color-muted-4);
 }
 
 .priceSelling {
   font-size: 16px;
   font-weight: 600;
   line-height: 140%;
-  color: #1e1e1e;
+  color: var(--color-text-strong);
 }
 
 .remove {
   flex: none;
   width: 18px;
   height: 18px;
-  color: #a7aab4;
+  color: var(--color-icon-muted);
 
   &:hover {
     color: var(--color-danger);
@@ -128,7 +128,12 @@
   width: 70px;
   height: 70px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-muted-1) 25%, var(--color-muted-2) 50%, var(--color-muted-1) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-1) 25%,
+    var(--color-muted-2) 50%,
+    var(--color-muted-1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -144,7 +149,12 @@
   width: 60%;
   height: 16px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--color-muted-1) 25%, var(--color-muted-2) 50%, var(--color-muted-1) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-1) 25%,
+    var(--color-muted-2) 50%,
+    var(--color-muted-1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -153,7 +163,12 @@
   width: 30%;
   height: 12px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--color-muted-1) 25%, var(--color-muted-2) 50%, var(--color-muted-1) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-1) 25%,
+    var(--color-muted-2) 50%,
+    var(--color-muted-1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -169,7 +184,12 @@
   width: 60px;
   height: 16px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--color-muted-1) 25%, var(--color-muted-2) 50%, var(--color-muted-1) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-1) 25%,
+    var(--color-muted-2) 50%,
+    var(--color-muted-1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -178,7 +198,12 @@
   width: 40px;
   height: 20px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--color-muted-1) 25%, var(--color-muted-2) 50%, var(--color-muted-1) 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-muted-1) 25%,
+    var(--color-muted-2) 50%,
+    var(--color-muted-1) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }

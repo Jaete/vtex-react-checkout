@@ -1,34 +1,41 @@
-import { useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+import { useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../context/CartContext'
 
 function formatCep(value: string): string {
-  const clean = value.replace(/\D/g, '');
+  const clean = value.replace(/\D/g, '')
 
   if (clean.length <= 5) {
-    return clean;
+    return clean
   }
-  return `${clean.slice(0, 5)}-${clean.slice(5, 8)}`;
+  return `${clean.slice(0, 5)}-${clean.slice(5, 8)}`
 }
 
 export function useShippingCalculator() {
-  const { calculateShipping, shippingOptions, selectedShipping, selectShippingOption, loading, error } = useCart();
-  const [cep, setCep] = useState('');
+  const {
+    calculateShipping,
+    shippingOptions,
+    selectedShipping,
+    selectShippingOption,
+    loading,
+    error,
+  } = useCart()
+  const [cep, setCep] = useState('')
 
   const handleCepChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCep(event.target.value);
+    const formatted = formatCep(event.target.value)
     if (formatted.length <= 9) {
-      setCep(formatted);
+      setCep(formatted)
     }
-  };
+  }
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
     if (cep.replace(/\D/g, '').length === 8) {
-      calculateShipping(cep);
+      calculateShipping(cep)
     }
-  };
+  }
 
   return {
     cep,
@@ -40,5 +47,5 @@ export function useShippingCalculator() {
     handleCepChange,
     handleSubmit,
     isSubmitDisabled: loading || cep.replace(/\D/g, '').length !== 8,
-  };
+  }
 }

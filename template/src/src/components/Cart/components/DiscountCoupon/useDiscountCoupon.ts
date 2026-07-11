@@ -1,21 +1,27 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../context/CartContext'
 
 export function useDiscountCoupon() {
-  const { addDiscountCoupon, removeDiscountCoupon, orderForm, couponError, loading } = useCart();
-  const [couponCode, setCouponCode] = useState('');
+  const {
+    addDiscountCoupon,
+    removeDiscountCoupon,
+    orderForm,
+    couponError,
+    loading,
+  } = useCart()
+  const [couponCode, setCouponCode] = useState('')
 
-  const activeCoupon = orderForm?.marketingData?.coupon || null;
+  const activeCoupon = orderForm?.marketingData?.coupon || null
 
   const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
     if (couponCode.trim()) {
-      addDiscountCoupon(couponCode);
-      setCouponCode('');
+      addDiscountCoupon(couponCode)
+      setCouponCode('')
     }
-  };
+  }
 
   return {
     couponCode,
@@ -25,5 +31,5 @@ export function useDiscountCoupon() {
     loading,
     handleSubmit,
     removeDiscountCoupon,
-  };
+  }
 }

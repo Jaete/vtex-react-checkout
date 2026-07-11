@@ -1,4 +1,4 @@
-export type ShippingCalculatorVariant = 'auto' | 'list' | 'channel';
+export type ShippingCalculatorVariant = 'auto' | 'list' | 'channel'
 
 export interface ShippingCalculatorProps {
   /**
@@ -7,5 +7,5 @@ export interface ShippingCalculatorProps {
    * - `channel`: seletor primário Retirada/Entrega com SLAs filtrados por canal;
    * - `auto` (padrão): usa `channel` quando há SLAs de retirada E entrega, senão `list`.
    */
-  variant?: ShippingCalculatorVariant;
+  variant?: ShippingCalculatorVariant
 }

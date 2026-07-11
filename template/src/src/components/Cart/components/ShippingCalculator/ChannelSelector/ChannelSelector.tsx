@@ -1,30 +1,43 @@
-import ShippingOption from '~components/ShippingOption/ShippingOption';
-import { StoreIcon, TruckIcon } from '~components/Icons';
-import { useChannelSelector } from './useChannelSelector';
-import type { ChannelSelectorProps, ShippingChannel } from './ChannelSelector.types';
-import styles from './ChannelSelector.module.scss';
+import ShippingOption from '~components/ShippingOption/ShippingOption'
+import { StoreIcon, TruckIcon } from '~components/Icons'
+import { useChannelSelector } from './useChannelSelector'
+import type {
+  ChannelSelectorProps,
+  ShippingChannel,
+} from './ChannelSelector.types'
+import styles from './ChannelSelector.module.scss'
 
 const CHANNEL_LABELS: Record<ShippingChannel, string> = {
   delivery: 'Entrega',
   pickup: 'Retirada',
-};
-
-function pickupSubtitle(pickupStoreName?: string, pickupAddress?: string): string | undefined {
-  return [pickupStoreName, pickupAddress].filter(Boolean).join(' — ') || undefined;
 }
 
-function ChannelSelector({ options, selectedShipping, onSelect }: ChannelSelectorProps) {
-  const { availableChannels, activeChannel, setActiveChannel, visibleOptions } = useChannelSelector({
-    options,
-    selectedShipping,
-  });
+function pickupSubtitle(
+  pickupStoreName?: string,
+  pickupAddress?: string
+): string | undefined {
+  return (
+    [pickupStoreName, pickupAddress].filter(Boolean).join(' — ') || undefined
+  )
+}
+
+function ChannelSelector({
+  options,
+  selectedShipping,
+  onSelect,
+}: ChannelSelectorProps) {
+  const { availableChannels, activeChannel, setActiveChannel, visibleOptions } =
+    useChannelSelector({
+      options,
+      selectedShipping,
+    })
 
   return (
     <div className={styles.channelSelector}>
       <div className={styles.tabs} role="tablist">
         {availableChannels.map((channel) => {
-          const Icon = channel === 'pickup' ? StoreIcon : TruckIcon;
-          const isActive = channel === activeChannel;
+          const Icon = channel === 'pickup' ? StoreIcon : TruckIcon
+          const isActive = channel === activeChannel
           return (
             <button
               key={channel}
@@ -37,7 +50,7 @@ function ChannelSelector({ options, selectedShipping, onSelect }: ChannelSelecto
               <Icon className={styles.tabIcon} />
               {CHANNEL_LABELS[channel]}
             </button>
-          );
+          )
         })}
       </div>
 
@@ -53,13 +66,15 @@ function ChannelSelector({ options, selectedShipping, onSelect }: ChannelSelecto
             onSelect={() => onSelect(option.id)}
             staggerMs={75}
             pickupStore={
-              activeChannel === 'pickup' ? pickupSubtitle(option.pickupStoreName, option.pickupAddress) : undefined
+              activeChannel === 'pickup'
+                ? pickupSubtitle(option.pickupStoreName, option.pickupAddress)
+                : undefined
             }
           />
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default ChannelSelector;
+export default ChannelSelector

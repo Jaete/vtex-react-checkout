@@ -1,8 +1,14 @@
-import { MinusIcon, PlusIcon } from '../Icons';
-import type { QtySelectorProps } from './QtySelector.types';
-import styles from './QtySelector.module.scss';
+import { MinusIcon, PlusIcon } from '../Icons'
+import type { QtySelectorProps } from './QtySelector.types'
+import styles from './QtySelector.module.scss'
 
-function QtySelector({ value, onDecrease, onIncrease, decreaseDisabled, increaseDisabled }: QtySelectorProps) {
+function QtySelector({
+  value,
+  onDecrease,
+  onIncrease,
+  decreaseDisabled,
+  increaseDisabled,
+}: QtySelectorProps) {
   return (
     <div className={styles.selector}>
       <button
@@ -25,7 +31,7 @@ function QtySelector({ value, onDecrease, onIncrease, decreaseDisabled, increase
         <PlusIcon width={12} height={12} />
       </button>
     </div>
-  );
+  )
 }
 
-export default QtySelector;
+export default QtySelector

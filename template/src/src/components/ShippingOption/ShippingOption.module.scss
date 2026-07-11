@@ -17,14 +17,21 @@
   border: 1px solid var(--color-muted-2);
   border-radius: var(--radius-card);
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
   // `both` mantém o estado inicial (invisível/deslocado) durante o delay da cascata;
   // o `animation-delay` por item vem inline (index * staggerMs).
   animation: shippingOptionIn 0.35s ease both;
 
   &:hover {
     border-color: var(--vtex-primary-blue);
-    background-color: color-mix(in srgb, var(--vtex-primary-blue) 10%, transparent);
+    background-color: color-mix(
+      in srgb,
+      var(--vtex-primary-blue) 10%,
+      transparent
+    );
   }
 }
 
@@ -36,7 +43,11 @@
 
 .optionSelected {
   border-color: var(--vtex-primary-blue);
-  background-color: color-mix(in srgb, var(--vtex-primary-blue) 10%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--vtex-primary-blue) 10%,
+    transparent
+  );
   box-shadow: inset 0 0 0 1px var(--vtex-primary-blue);
 
   &:hover {

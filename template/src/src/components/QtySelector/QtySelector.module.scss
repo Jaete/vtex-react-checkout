@@ -7,8 +7,8 @@
   gap: 16px;
   height: 36px;
   padding: 0 16px;
-  background: #ffffff;
-  border: 1px solid #dadce0;
+  background: var(--color-muted-0);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
 }
 
@@ -18,14 +18,14 @@
   justify-content: center;
   width: 14px;
   height: 14px;
-  color: #757883;
+  color: var(--color-icon-default);
 
   &:hover:not(:disabled) {
-    color: #1e1e1e;
+    color: var(--color-text-strong);
   }
 
   &:disabled {
-    color: #dadce0;
+    color: var(--color-border);
   }
 }
 
@@ -35,5 +35,5 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 150%;
-  color: #090a0b;
+  color: var(--color-text-emphasis);
 }

@@ -1,20 +1,16 @@
 {
+  "extends": "@vtex/tsconfig",
   "compilerOptions": {
-    "alwaysStrict": true,
-    "esModuleInterop": true,
+    // @vtex/tsconfig usa `jsx: "react"` (o clássico, precisa de `import React`)
+    // e `module: "es6"` — este projeto usa o JSX automático (sem `import
+    // React`) e o webpack/babel já resolvem ESM livremente, então overridamos
+    // só essas duas. `noImplicitAny: false` também é intencional: o escape
+    // hatch `(window as any).vtexjs`/orderForm não tipado se propaga por
+    // vários hooks (ver CLAUDE.md), then forçar `noImplicitAny` custaria mais
+    // do que ajudaria aqui.
     "jsx": "preserve",
     "module": "esnext",
-    "moduleResolution": "node",
     "noImplicitAny": false,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
     "resolveJsonModule": true,
     "noEmitOnError": true,
     "baseUrl": ".",
@@ -29,8 +25,5 @@
     "./typings/*.d.ts",
     "./**/*.tsx",
     "./**/*.ts"
-  ],
-  "typeAcquisition": {
-    "enable": false
-  }
+  ]
 }

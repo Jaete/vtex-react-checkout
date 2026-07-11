@@ -13,14 +13,32 @@ function Button({
   className = '',
   ...rest
 }: ButtonProps) {
-  const classes = [styles.button, styles[variant], styles[size], fullWidth ? styles.fullWidth : '', className]
+  const classes = [
+    styles.button,
+    styles[variant],
+    styles[size],
+    fullWidth ? styles.fullWidth : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ')
 
   return (
-    <button type={type} className={classes} disabled={disabled || loading} {...rest}>
-      {loading && <SpinnerIcon className={styles.spinner} pathClassName={styles.spinnerPath} />}
-      <span className={loading ? styles.hidden : styles.content}>{children}</span>
+    <button
+      type={type}
+      className={classes}
+      disabled={disabled || loading}
+      {...rest}
+    >
+      {loading && (
+        <SpinnerIcon
+          className={styles.spinner}
+          pathClassName={styles.spinnerPath}
+        />
+      )}
+      <span className={loading ? styles.hidden : styles.content}>
+        {children}
+      </span>
     </button>
   )
 }

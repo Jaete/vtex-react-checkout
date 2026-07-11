@@ -1,5 +1,5 @@
 export interface CouponBadgeProps {
-  code: string;
-  onRemove: () => void;
-  disabled?: boolean;
+  code: string
+  onRemove: () => void
+  disabled?: boolean
 }

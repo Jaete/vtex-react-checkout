@@ -1,7 +1,7 @@
-import Header from './components/Header/Header';
-import CartContent from './components/CartContent/CartContent';
-import { CartProvider } from './context/CartContext';
-import styles from './Cart.module.scss';
+import Header from './components/Header/Header'
+import CartContent from './components/CartContent/CartContent'
+import { CartProvider } from './context/CartContext'
+import styles from './Cart.module.scss'
 
 // "vtex-cart-app" é uma classe literal (não hasheada) de propósito: é nela
 // que o InjectGlobalResetPlugin (webpack.config.js) ancora o reset universal
@@ -9,7 +9,7 @@ import styles from './Cart.module.scss';
 // tipografia) sem esse problema de ordem — ver Cart.module.scss.
 interface CartProps {
   /** Pré-seleciona a 1ª opção de frete após o cálculo (padrão `true`). */
-  autoSelectShipping?: boolean;
+  autoSelectShipping?: boolean
 }
 
 function Cart({ autoSelectShipping }: CartProps) {
@@ -22,7 +22,7 @@ function Cart({ autoSelectShipping }: CartProps) {
         </main>
       </div>
     </CartProvider>
-  );
+  )
 }
 
-export default Cart;
+export default Cart
